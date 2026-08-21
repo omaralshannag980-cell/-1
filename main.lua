@@ -31,26 +31,16 @@ ScreenGui.ResetOnSpawn = false
 local MainFrame = Instance.new("Frame", ScreenGui)
 MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 30)
 MainFrame.Position = UDim2.new(0.5, -120, 0.35, -120)
-MainFrame.Size = UDim2.new(0, 240, 0, 280)
+MainFrame.Size = UDim2.new(0, 240, 0, 250)
 MainFrame.Draggable = true
 MainFrame.Active = true
-
-local ToggleButton = Instance.new("TextButton", MainFrame)
-ToggleButton.Size = UDim2.new(0, 30, 0, 30)
-ToggleButton.Position = UDim2.new(0, 5, 0, 5)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(30, 80, 200)
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.Text = "➖"
-ToggleButton.TextSize = 18
-ToggleButton.Font = Enum.Font.SourceSansBold
-ToggleButton.BorderSizePixel = 0
 
 local TitleLabel = Instance.new("TextLabel", MainFrame)
 TitleLabel.Size = UDim2.new(1, 0, 0, 30)
 TitleLabel.Position = UDim2.new(0, 0, 0, 5)
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.TextColor3 = Color3.fromRGB(60, 150, 255)
-TitleLabel.Text = "🔥Travexa / ترفكسا🔥"
+TitleLabel.Text = "🔥TRAVEXA / ترفكسا🔥"
 TitleLabel.Font = Enum.Font.SourceSansBold
 TitleLabel.TextSize = 18
 
@@ -77,6 +67,26 @@ ApplyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 ApplyButton.Text = "Apply Custom Info"
 ApplyButton.Font = Enum.Font.SourceSansBold
 ApplyButton.TextSize = 16
+
+local ToggleFrame = Instance.new("Frame", ScreenGui)
+ToggleFrame.Size = UDim2.new(0, 50, 0, 50)
+ToggleFrame.Position = UDim2.new(1, -65, 0.5, -25)
+ToggleFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ToggleFrame.BorderSizePixel = 0
+
+local Corner = Instance.new("UICorner", ToggleFrame)
+Corner.CornerRadius = UDim.new(1, 0)
+
+local DragDetector = Instance.new("UIDragDetector", ToggleFrame)
+
+local TLabel = Instance.new("TextLabel", ToggleFrame)
+TLabel.Size = UDim2.new(1, 0, 1, 0)
+TLabel.BackgroundTransparency = 1
+TLabel.Text = "T"
+TLabel.TextColor3 = Color3.fromRGB(0, 150, 255)
+TLabel.TextSize = 30
+TLabel.Font = Enum.Font.SourceSansBold
+TLabel.TextScaled = true
 
 local startHours = 88
 local startMinutes = 6
@@ -131,16 +141,9 @@ end)
 
 local isVisible = true
 
-ToggleButton.MouseButton1Click:Connect(function()
+ToggleFrame.MouseButton1Click:Connect(function()
     isVisible = not isVisible
     MainFrame.Visible = isVisible
-    if isVisible then
-        ToggleButton.Text = "➖"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(30, 80, 200)
-    else
-        ToggleButton.Text = "➕"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-    end
 end)
 
 ApplyButton.MouseButton1Click:Connect(function()
