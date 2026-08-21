@@ -39,7 +39,7 @@ MainFrame.Position = UDim2.new(0.5, -120, 0.35, -120)
 MainFrame.Size = UDim2.new(0, 240, 0, 255)
 MainFrame.Draggable = true
 MainFrame.Active = true
-MainFrame.Visible = false -- ✅ الواجهة مخفية حتى يضغط الزر
+MainFrame.Visible = false -- مخفية حتى يضغط الزر
 
 local TitleLabel = Instance.new("TextLabel", MainFrame)
 TitleLabel.Size = UDim2.new(1, 0, 0, 30)
@@ -89,11 +89,21 @@ ToggleButton.AutoButtonColor = false
 local Corner = Instance.new("UICorner", ToggleButton)
 Corner.CornerRadius = UDim.new(1, 0)
 
--- نظام سحب وضغط متوافق مع الجوال والبيسي
+-- نظام سحب وضغط متوافق مع الجوال والبيسي (مع حدود الشاشة)
 local dragStartPos = nil
 local dragStartInputPos = nil
 local isDragging = false
 local moved = false
+
+local function clampToScreen(posX, posY)
+    local screenSize = workspace.CurrentCamera.ViewportSize
+    local buttonSize = ToggleButton.AbsoluteSize
+    local minX = 0
+    local minY = 0
+    local maxX = screenSize.X - buttonSize.X
+    local maxY = screenSize.Y - buttonSize.Y
+    return math.clamp(posX, minX, maxX), math.clamp(posY, minY, maxY)
+end
 
 ToggleButton.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -111,7 +121,10 @@ ToggleButton.InputChanged:Connect(function(input)
         if math.abs(delta.X) > 5 or math.abs(delta.Y) > 5 then
             moved = true
         end
-        ToggleButton.Position = UDim2.new(0, dragStartPos.X.Offset + delta.X, 0, dragStartPos.Y.Offset + delta.Y)
+        local newX = dragStartPos.X.Offset + delta.X
+        local newY = dragStartPos.Y.Offset + delta.Y
+        local clampedX, clampedY = clampToScreen(newX, newY)
+        ToggleButton.Position = UDim2.new(0, clampedX, 0, clampedY)
     end
 end)
 
