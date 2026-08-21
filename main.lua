@@ -33,13 +33,14 @@ local ScreenGui = Instance.new("ScreenGui", PlayerGui)
 ScreenGui.Name = "Travexa_Gui"
 ScreenGui.ResetOnSpawn = false
 
--- الواجهة الرئيسية
+-- الواجهة الرئيسية (تبدأ مخفية)
 local MainFrame = Instance.new("Frame", ScreenGui)
 MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- أسود
 MainFrame.Position = UDim2.new(0.5, -120, 0.35, -120)
 MainFrame.Size = UDim2.new(0, 240, 0, 255)
 MainFrame.Draggable = true
 MainFrame.Active = true
+MainFrame.Visible = false -- ✅ الواجهة مخفية حتى يضغط الزر
 
 local TitleLabel = Instance.new("TextLabel", MainFrame)
 TitleLabel.Size = UDim2.new(1, 0, 0, 30)
@@ -74,7 +75,7 @@ ApplyButton.Text = "Apply Custom Info"
 ApplyButton.Font = Enum.Font.SourceSansBold
 ApplyButton.TextSize = 16
 
--- زر دائري عائم قابل للسحب على اليمين
+-- الزر الدائري العائم القابل للسحب على اليمين
 local ToggleButton = Instance.new("TextButton", ScreenGui)
 ToggleButton.Size = UDim2.new(0, 50, 0, 50)
 ToggleButton.Position = UDim2.new(1, -60, 0.5, -25) -- يمين الشاشة
@@ -89,7 +90,7 @@ ToggleButton.AutoButtonColor = false -- نمنع تغيير اللون عند ا
 local Corner = Instance.new("UICorner", ToggleButton)
 Corner.CornerRadius = UDim.new(1, 0)
 
--- نظام السحب للزر الدائري
+-- نظام السحب للزر الدائري (مع تمييز الضغط عن السحب)
 local dragging = false
 local dragStartPos = nil
 local dragStartMouse = nil
@@ -107,7 +108,7 @@ ToggleButton.MouseButton1Up:Connect(function()
         local currentMouse = UserInputService:GetMouseLocation()
         local delta = currentMouse - dragStartMouse
         if math.abs(delta.X) < dragThreshold and math.abs(delta.Y) < dragThreshold then
-            -- يعتبر ضغطة، نبدل الواجهة
+            -- يعتبر ضغطة: نفتح أو نقفل الواجهة
             MainFrame.Visible = not MainFrame.Visible
         end
     end
@@ -144,13 +145,10 @@ local function formatAndApply(child)
     local minutes = math.floor((currentTime % 3600) / 60)
     local seconds = currentTime % 60
     
-    -- فحص النص الحالي عشان نحدد الصيغة المطلوبة للتبديل
     local currentText = child.Text
     if string.find(currentText, "Hour") or string.find(currentText, "Minute") or string.find(currentText, "Second") then
-        -- تبديل الصيغة اللفظية (حقت الجوال) بنفس الشكل المظبوط بالملي
         child.Text = string.format("%d Hour(s), %d Minute(s), %d Second(s)", hours, minutes, seconds)
     else
-        -- تبديل الصيغة الرقمية العادية (حقت البيسي)
         child.Text = string.format("%d:%02d:%02d", hours, minutes, seconds)
     end
 end
@@ -160,7 +158,6 @@ local function watchGui(parent)
         if parent then
             for _, child in pairs(parent:GetChildren()) do
                 if child:IsA("TextLabel") then
-                    -- الفحص الحين صار يدعم الصيغة الرقمية أو اللفظية أو اسم خانة الوقت "Time"
                     if string.find(child.Text, "^%d+:%d+:%d+$") or string.find(child.Text, "Hour%(s%)") or child.Name == "Time" then
                         formatAndApply(child)
                         child:GetPropertyChangedSignal("Text"):Connect(function()
@@ -174,7 +171,6 @@ local function watchGui(parent)
     end)
 end
 
--- حلقة الفحص بالخلفية الآمنة لجميع المنصات
 task.spawn(function()
     while task.wait(0.5) do
         pcall(function() watchGui(CoreGui) end)
@@ -182,7 +178,6 @@ task.spawn(function()
     end
 end)
 
--- عند الضغط على زر التطبيق
 ApplyButton.MouseButton1Click:Connect(function()
     startHours = tonumber(HourBox.Text) or 0
     startMinutes = tonumber(MinuteBox.Text) or 0
