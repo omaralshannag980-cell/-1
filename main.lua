@@ -3,7 +3,6 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- فحص ذكي ومتوافق مع جميع الهاكات (بيسي وجوال)
 local iyFound = false
 local function checkForIY(parent)
     if iyFound then return end
@@ -23,27 +22,35 @@ end
 pcall(function() checkForIY(CoreGui) end)
 pcall(function() checkForIY(PlayerGui) end)
 
--- تنظيف القائمة القديمة لو موجودة
 if PlayerGui:FindFirstChild("Akainu_Gui") then PlayerGui.Akainu_Gui:Destroy() end
 
--- إنشاء قائمة Akainu / اكاينو فوراً
 local ScreenGui = Instance.new("ScreenGui", PlayerGui)
 ScreenGui.Name = "Akainu_Gui"
 ScreenGui.ResetOnSpawn = false
 
 local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 30)
 MainFrame.Position = UDim2.new(0.5, -120, 0.35, -120)
-MainFrame.Size = UDim2.new(0, 240, 0, 255)
+MainFrame.Size = UDim2.new(0, 240, 0, 280)
 MainFrame.Draggable = true
 MainFrame.Active = true
+
+local ToggleButton = Instance.new("TextButton", MainFrame)
+ToggleButton.Size = UDim2.new(0, 30, 0, 30)
+ToggleButton.Position = UDim2.new(0, 5, 0, 5)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(30, 80, 200)
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.Text = "➖"
+ToggleButton.TextSize = 18
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.BorderSizePixel = 0
 
 local TitleLabel = Instance.new("TextLabel", MainFrame)
 TitleLabel.Size = UDim2.new(1, 0, 0, 30)
 TitleLabel.Position = UDim2.new(0, 0, 0, 5)
 TitleLabel.BackgroundTransparency = 1
-TitleLabel.TextColor3 = Color3.fromRGB(255, 60, 60)
-TitleLabel.Text = "ترفكسا / Travexa"
+TitleLabel.TextColor3 = Color3.fromRGB(60, 150, 255)
+TitleLabel.Text = "🔥Travexa / ترفكسا🔥"
 TitleLabel.Font = Enum.Font.SourceSansBold
 TitleLabel.TextSize = 18
 
@@ -51,27 +58,26 @@ local function createBox(pos, text)
     local box = Instance.new("TextBox", MainFrame)
     box.Size = UDim2.new(0.8, 0, 0, 30)
     box.Position = pos
-    box.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    box.BackgroundColor3 = Color3.fromRGB(20, 30, 60)
     box.TextColor3 = Color3.fromRGB(255, 255, 255)
     box.Text = text
     box.ClearTextOnFocus = true
     return box
 end
 
-local HourBox = createBox(UDim2.new(0.1, 0, 0.18, 0), "88")
-local MinuteBox = createBox(UDim2.new(0.1, 0, 0.34, 0), "6")
-local SecondBox = createBox(UDim2.new(0.1, 0, 0.50, 0), "5")
+local HourBox = createBox(UDim2.new(0.1, 0, 0.22, 0), "88")
+local MinuteBox = createBox(UDim2.new(0.1, 0, 0.40, 0), "6")
+local SecondBox = createBox(UDim2.new(0.1, 0, 0.58, 0), "5")
 
 local ApplyButton = Instance.new("TextButton", MainFrame)
 ApplyButton.Size = UDim2.new(0.8, 0, 0, 35)
-ApplyButton.Position = UDim2.new(0.1, 0, 0.75, 0)
-ApplyButton.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+ApplyButton.Position = UDim2.new(0.1, 0, 0.78, 0)
+ApplyButton.BackgroundColor3 = Color3.fromRGB(30, 80, 200)
 ApplyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 ApplyButton.Text = "Apply Custom Info"
 ApplyButton.Font = Enum.Font.SourceSansBold
 ApplyButton.TextSize = 16
 
--- نظام التزوير والمراقبة المتطور للصيغتين (الرقمية واللفظية)
 local startHours = 88
 local startMinutes = 6
 local startSeconds = 5
@@ -90,13 +96,10 @@ local function formatAndApply(child)
     local minutes = math.floor((currentTime % 3600) / 60)
     local seconds = currentTime % 60
     
-    -- فحص النص الحالي عشان نحدد الصيغة المطلوبة للتبديل
     local currentText = child.Text
     if string.find(currentText, "Hour") or string.find(currentText, "Minute") or string.find(currentText, "Second") then
-        -- تبديل الصيغة اللفظية (حقت الجوال) بنفس الشكل المظبوط بالملي
         child.Text = string.format("%d Hour(s), %d Minute(s), %d Second(s)", hours, minutes, seconds)
     else
-        -- تبديل الصيغة الرقمية العادية (حقت البيسي)
         child.Text = string.format("%d:%02d:%02d", hours, minutes, seconds)
     end
 end
@@ -106,7 +109,6 @@ local function watchGui(parent)
         if parent then
             for _, child in pairs(parent:GetChildren()) do
                 if child:IsA("TextLabel") then
-                    -- الفحص الحين صار يدعم الصيغة الرقمية أو اللفظية أو اسم خانة الوقت "Time"
                     if string.find(child.Text, "^%d+:%d+:%d+$") or string.find(child.Text, "Hour%(s%)") or child.Name == "Time" then
                         formatAndApply(child)
                         child:GetPropertyChangedSignal("Text"):Connect(function()
@@ -120,7 +122,6 @@ local function watchGui(parent)
     end)
 end
 
--- حلقة الفحص بالخلفية الآمنة لجميع المنصات
 task.spawn(function()
     while task.wait(0.5) do
         pcall(function() watchGui(CoreGui) end)
@@ -128,7 +129,20 @@ task.spawn(function()
     end
 end)
 
--- عند الضغط على الزر
+local isVisible = true
+
+ToggleButton.MouseButton1Click:Connect(function()
+    isVisible = not isVisible
+    MainFrame.Visible = isVisible
+    if isVisible then
+        ToggleButton.Text = "➖"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(30, 80, 200)
+    else
+        ToggleButton.Text = "➕"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    end
+end)
+
 ApplyButton.MouseButton1Click:Connect(function()
     startHours = tonumber(HourBox.Text) or 0
     startMinutes = tonumber(MinuteBox.Text) or 0
