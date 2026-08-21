@@ -3,7 +3,6 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
 
 -- فحص ذكي ومتوافق مع جميع الهاكات (بيسي وجوال)
 local iyFound = false
@@ -84,45 +83,45 @@ ToggleButton.TextColor3 = Color3.fromRGB(0, 170, 255) -- أزرق
 ToggleButton.Text = "T"
 ToggleButton.Font = Enum.Font.SourceSansBold
 ToggleButton.TextSize = 24
-ToggleButton.AutoButtonColor = false -- نمنع تغيير اللون عند الضغط
+ToggleButton.AutoButtonColor = false
 
--- جعل الزر دائرياً
+-- شكل دائري
 local Corner = Instance.new("UICorner", ToggleButton)
 Corner.CornerRadius = UDim.new(1, 0)
 
--- نظام السحب للزر الدائري (مع تمييز الضغط عن السحب)
-local dragging = false
+-- نظام سحب وضغط متوافق مع الجوال والبيسي
 local dragStartPos = nil
-local dragStartMouse = nil
-local dragThreshold = 5 -- بكسلات للتفريق بين السحب والضغط
+local dragStartInputPos = nil
+local isDragging = false
+local moved = false
 
-ToggleButton.MouseButton1Down:Connect(function()
-    dragging = true
-    dragStartPos = ToggleButton.Position
-    dragStartMouse = UserInputService:GetMouseLocation()
-    UserInputService.MouseIconEnabled = false
+ToggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        isDragging = true
+        moved = false
+        dragStartPos = ToggleButton.Position
+        dragStartInputPos = input.Position
+        input:SetIsCapture(true)
+    end
 end)
 
-ToggleButton.MouseButton1Up:Connect(function()
-    if dragging then
-        local currentMouse = UserInputService:GetMouseLocation()
-        local delta = currentMouse - dragStartMouse
-        if math.abs(delta.X) < dragThreshold and math.abs(delta.Y) < dragThreshold then
-            -- يعتبر ضغطة: نفتح أو نقفل الواجهة
+ToggleButton.InputChanged:Connect(function(input)
+    if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStartInputPos
+        if math.abs(delta.X) > 5 or math.abs(delta.Y) > 5 then
+            moved = true
+        end
+        ToggleButton.Position = UDim2.new(0, dragStartPos.X.Offset + delta.X, 0, dragStartPos.Y.Offset + delta.Y)
+    end
+end)
+
+ToggleButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        isDragging = false
+        if not moved then
+            -- ضغطة سريعة: فتح/إغلاق الواجهة
             MainFrame.Visible = not MainFrame.Visible
         end
-    end
-    dragging = false
-    UserInputService.MouseIconEnabled = true
-end)
-
-RunService.RenderStepped:Connect(function()
-    if dragging then
-        local currentMouse = UserInputService:GetMouseLocation()
-        local delta = currentMouse - dragStartMouse
-        local newX = dragStartPos.X.Offset + delta.X
-        local newY = dragStartPos.Y.Offset + delta.Y
-        ToggleButton.Position = UDim2.new(0, newX, 0, newY)
     end
 end)
 
